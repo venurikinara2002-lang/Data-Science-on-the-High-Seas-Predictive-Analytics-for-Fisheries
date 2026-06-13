@@ -1,0 +1,13 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Python Files
+__pycache__/
+*.pyc
+venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
