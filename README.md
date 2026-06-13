@@ -1,94 +1,73 @@
 # OceanGuard Optimizer: Data Science on the High Seas
 
-![Boat Dashboard](boat_dashboard.png)
+## 📌 Project Overview
+Offshore fisheries represent a vital sector in the maritime economy, yet they face massive operational risks and high capital costs. For offshore fishing voyages in developing nations like **Sri Lanka**, fuel expenses, vessel maintenance, and crew wages represent significant financial risks, while changing weather conditions present constant safety hazards. 
 
-## 📌 Project Introduction & Industry Context
-
-Offshore fisheries represent a vital sector in the maritime economy, yet they face massive operational risks and high capital costs. For offshore fishing voyages in developing countries like **Sri Lanka**, fuel expenses, vessel maintenance, and crew sizing represent significant financial risks, while changing weather conditions present constant safety hazards. 
-
-This project addresses these **real-world maritime challenges** using a **real-world dataset**—containing **20,000+ Sri Lankan offshore fishing trip records**. By leveraging historical logs of vessel characteristics, weather metrics, and catch yields, **OceanGuard Optimizer** predicts the operational costs of upcoming trips and advises crew members on their financial break-even targets and departure safety.
+This repository contains the end-to-end data science and predictive analytics workflow for **OceanGuard Optimizer**. Using a real-world dataset of **20,000+ Sri Lankan offshore fishing trip records**, we perform comprehensive feature engineering, statistical hypothesis testing, and model training to predict voyage operational costs, calculate break-even catch targets, and assess weather safety risks.
 
 ---
 
-## 📁 Repository Overview & Deliverables
+## 📁 Repository Directory & Deliverables
+This repository contains the primary dataset, analysis source code, and key deliverables:
 
-This repository contains the source code for the Streamlit decision support system, the machine learning models (Random Forest, CatBoost, and XGBoost), and supporting documentation.
-
-### 🔗 Quick Links to Project Assets:
-* 📄 **[Full Project Report (PDF)](Full%20project%20report.pdf)**: Comprehensive analysis of models, feature extraction, and validation results.
-* 📄 **[Individual Contribution Report (PDF)](Individual%20contribution%20report.pdf)**: Report detailing specific design, modeling, and analytics contributions.
-* 📊 **[Presentation Slides (PDF)](slides.pdf)**: Pitch deck detailing models, metrics, and application workflow.
-* 🎥 **[Video Demonstration (MP4)](fisheries%20video%20demonstration.mp4)**: Walkthrough of the OceanGuard Optimizer web dashboard.
-
----
-
-## 💡 Business & Industry Impact: Why It Matters
-
-### 1. Pre-Trip Financial Certainty
-Fishing trips require massive upfront investments in fuel, ice, food, and bait. If a voyage yields a low catch, the crew can run a loss. By predicting operational costs beforehand (based on engine HP, trip duration, distance, and crew size), **OceanGuard Optimizer** eliminates financial uncertainty.
-
-### 2. Profit Break-Even Target Setting
-The app converts predicted trip costs into a concrete catch target:
-* *“To cover your estimated cost of LKR 125,000, you must catch a minimum of 147 kg of mixed species.”*
-This gives the captain a clear, data-backed operational goal for the voyage.
-
-### 3. Sea Safety & Voyage Risk Mitigation
-Rough seas endanger both crew lives and vessel assets. The live weather checking system uses real-time wave height (m) and wind speed (kph) forecasts to categorize departures:
-* 🟢 **Calm**: Safe to depart.
-* 🟡 **Moderate**: Proceed with caution.
-* 🔴 **Rough**: Departure not recommended.
-
-### 4. Crew and Vessel Specification Tuning
-By visualizing the correlation between crew size and total operational cost, fleet owners can optimize crew scheduling to maximize net returns.
+* 📊 **[Dataset (CSV)](fishing_data.csv)**: Complete dataset containing 20,000 records of fishing trip parameters, weather metrics, species catches, and cost structures.
+* 📓 **[Machine Learning Modelling Source File (Jupyter Notebook)](Python_ML_Modelling_Source_File(Venuri)%20(4).ipynb)**: Full Python notebook containing data cleaning, MICE imputation, geographic clustering, feature engineering, statistical tests, and machine learning models.
+* 📄 **[Full Project Report (PDF)](Full%20project%20report.pdf)**: Detailed research report detailing the methodologies, model diagnostics, feature analysis, and validation results.
+* 📄 **[Individual Contribution Report (PDF)](Individual%20contribution%20report.pdf)**: Individual report highlighting specific modeling contributions, database setup, and feature analytics.
+* 📊 **[Presentation Slides (PDF)](slides.pdf)**: Slide deck detailing the project background, model architectures, performance leaderboards, and business impact.
 
 ---
 
-## 🚀 Key Features
+## 🛠️ Data Science & Feature Engineering Workflow
 
-* **Predictive Cost Model**: 
-  Powered by a **Random Forest Regressor** (and optimized with **CatBoost/XGBoost** during training) that estimates voyage costs based on vessel and duration specifications.
-* **Streamlit Maritime Dashboard**:
-  Features a theme styled in deep maritime navy, presenting fleet operations, safety metrics, and financial tools in a clean sidebar configuration.
-* **Live Weather safety tester**:
-  Calculates sea conditions (Calm/Moderate/Rough) dynamically based on wind speed and wave height.
-* **Break-Even Catch Calculator**:
-  Dynamically computes required mixed-species weights (Yellowfin Tuna, Skipjack, Marlin) to cover predicted trip expenses at current market rates.
-* **Fleet Risk Analytics**:
-  Generates historical visualizations, crew sizing cost distributions, and species weight distributions using Matplotlib and Seaborn.
+The core modeling pipeline, implemented in the [Jupyter Notebook](Python_ML_Modelling_Source_File(Venuri)%20(4).ipynb), consists of the following key steps:
+
+### 1. Data Cleaning & Preprocessing
+* **Train/Test Split**: Early 80/20 train/test split to prevent target leakage during feature engineering.
+* **MICE Imputation**: Imputed missing `boat_length_ft` values using the **MICE (Multivariate Imputation by Chained Equations)** algorithm via scikit-learn's `IterativeImputer`.
+
+### 2. Advanced Feature Engineering
+* **Trip Age**: Calculated from the departure year to capture vessel aging effects.
+* **Port Name Matching**: Geographic coordinates of departure ports resolved into Sri Lankan coastal cities.
+* **Geographic Clustering**: Grouped fishing coordinates into **15 distinct fishing zones** using **K-Means Clustering**, aligning with the 15 administrative fisheries districts in Sri Lanka.
+* **Fuel Cost Calculation**: Derived directly as `fuel_liters * fuel_price_per_liter_LKR`.
+* **Net Profit**: Derived as `revenue_LKR - total_cost_LKR`.
+* **Sea Condition Categorization**: Classified into Calm, Moderate, and Rough based on wind speeds (`wind_kph`) and wave heights (`wave_m`).
+
+### 3. Statistical Analysis & Diagnostics
+* **Multicollinearity Checks (VIF)**: Calculated the Variance Inflation Factor (VIF) to detect collinearity between predictors:
+  * `boat_length_ft` (VIF: 24.22) and `engine_hp` (VIF: 20.84) showed high collinearity as expected due to physical vessel dimensions.
+  * Crew size (VIF: 3.63) and allowed offshore days (VIF: 1.76) were clean.
+* **Independent T-Test**: Conducted an independent t-test to evaluate the cost difference between safe and unsafe voyages. The test yielded a **T-statistic of -3.4920** ($p$-value of **0.0005**), concluding a statistically significant cost difference.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🏆 Machine Learning Leaderboard
 
-* **Framework**: Streamlit (Python)
-* **Libraries**: NumPy, Pandas, Scikit-Learn, Matplotlib, Seaborn
-* **Model**: RandomForestRegressor
+Five regression models were trained on log-transformed cost targets (`total_cost_LKR`) and evaluated on the test set. Models were back-transformed to LKR to compute error metrics:
+
+| Model | Accuracy ($R^2$) | Test MAE (LKR) | Error vs. Mean (%) | MAPE (%) | Test RMSE (LKR) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| 🚀 **XGBoost** | **0.9792** | **26,953.71** | **7.87%** | **9.30%** | **63,012.19** |
+| 🌲 **Random Forest** | 0.9784 | 28,996.15 | 8.47% | 9.49% | 69,394.01 |
+| 📈 **Ridge** | 0.9644 | 49,784.72 | 14.54% | 12.28% | 120,203.31 |
+| 📉 **Elastic Net** | 0.9596 | 56,399.43 | 16.47% | 12.89% | 140,296.44 |
+| 📊 **Lasso** | 0.9567 | 58,350.20 | 17.04% | 13.27% | 143,799.35 |
+
+*Note: The original dataset mean trip cost is **342,364.63 LKR**.*
 
 ---
 
-## 🔧 Installation & Setup
+## 💡 Strategic Cost Insights for Ship Owners
 
-### Prerequisites
-* **Python** 3.10 or higher
-* **pip** (Python package installer)
+Using linear regressions and median groupings, the project identifies key cost drivers modeled as "taxes":
+1. **Labor Tax (Crew Size)**: Each additional crew member increases the average voyage cost by **31.33%** due to wages and provisioning.
+2. **Zone Tax (Fishing Zone)**: Changing the targeted fishing zone introduces up to a **20.51%** cost variance.
+3. **Weather Tax (Sea Condition)**: Operating in rough weather conditions adds a **10.55%** cost variance compared to calm seas.
 
-### Quick Start
+---
 
-#### 1. Setup Environment & Dependencies
-Navigate to the directory, create a virtual environment, and install dependencies:
-```bash
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-#### 2. Run the Streamlit Application
-Start the Streamlit dashboard server:
-```bash
-streamlit run app.py
-```
-The application will open automatically in your browser at `http://localhost:8501`.
+## 🎯 Business Impact & Decision Support
+* **Pre-Trip Financial Planning**: Pre-departure predictions eliminate uncertainty by forecasting the required capital investment (fuel, ice, food, gear, and wages).
+* **Break-Even Target Setting**: Translates predicted costs into real-time catch targets (e.g., target weight in kg of Yellowfin Tuna, Skipjack, or Marlin required to cover expenses).
+* **Safety Optimization**: Evaluates wave and wind conditions dynamically to flag unsafe departures, protecting crew lives and fleet assets.
